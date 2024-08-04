@@ -1,0 +1,4 @@
+---
+- name: Disk encryption succeeded
+  debug:
+    msg: "Disk encryption was successful and verified."
