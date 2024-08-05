@@ -1,0 +1,18 @@
+---
+- name: Display CPU information
+  command: lscpu
+  register: cpu_info
+  changed_when: false
+
+- name: Show CPU information
+  debug:
+    msg: "{{ cpu_info.stdout_lines }}"
+
+- name: Check for Hyper-Threading or Multi-Threading
+  command: lscpu | grep "Thread(s) per core"
+  register: ht_info
+  changed_when: false
+
+- name: Show Hyper-Threading/Multithreading Information
+  debug:
+    msg: "{{ ht_info.stdout_lines }}"
