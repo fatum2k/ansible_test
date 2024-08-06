@@ -1,0 +1,8 @@
+---
+- name: Show renamed network interface information
+  command: ip -o link show net0
+  register: interface_info
+  changed_when: false
+
+- debug:
+    var: interface_info.stdout

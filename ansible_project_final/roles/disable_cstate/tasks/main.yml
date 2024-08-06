@@ -1,0 +1,43 @@
+---
+- name: Check current CPU C-state status
+  shell: "cat /sys/module/intel_idle/parameters/max_cstate"
+  register: cstate_status
+  changed_when: false
+  become: true
+
+- name: Check if C-state is enabled
+  debug:
+    msg: "C-state is currently enabled with value {{ cstate_status.stdout }}"
+  when: cstate_status.stdout != "0"
+
+- name: Ensure C-state is disabled persistently via GRUB
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_idle.max_cstate=0"'
+  become: true
+  register: grub_changed
+
+- name: Update GRUB configuration
+  shell: update-grub
+  when: grub_changed.changed
+  become: true
+
+- name: Reboot the system if C-state was changed
+  reboot:
+    msg: "Rebooting to apply persistent C-state changes"
+    connect_timeout: 5
+    reboot_timeout: 300
+  when: grub_changed.changed
+  become: true
+
+- name: Verify C-state is disabled after reboot
+  shell: "cat /sys/module/intel_idle/parameters/max_cstate"
+  register: new_cstate_status
+  changed_when: false
+  become: true
+
+- name: Confirm C-state is disabled
+  debug:
+    msg: "C-state has been disabled successfully."
+  when: new_cstate_status.stdout == "0"
