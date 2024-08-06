@@ -1,9 +1,0 @@
----
-- name: Check for non-root partitioned disk
-  include_tasks: check_disk.yml
-
-- name: Encrypt the non-root disk
-  include_tasks: encrypt_disk.yml
-
-- name: Validate the disk encryption
-  include_tasks: validate.yml

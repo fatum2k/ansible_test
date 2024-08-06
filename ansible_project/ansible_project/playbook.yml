@@ -1,7 +1,0 @@
----
-- name: prepare_host
-  hosts: all
-  gather_facts: yes
-  become: yes
-  roles:
-    - switch_cpu_mode
