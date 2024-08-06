@@ -1,4 +1,4 @@
-this Ensible project contains several roles. 
+this Ansible project contains several roles. 
 The disable_cstate role is for Disabling C-state for all available CPUs.
 The ping role is for checking the connection to the target host.
 The rename_interface role is intended to Rename the active network interface to "net0".
