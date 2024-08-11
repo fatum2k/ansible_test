@@ -1,3 +1,0 @@
----
-partition_name: "/dev/xvdb"
-luks_passphrase: "YourSecurePassphrase"

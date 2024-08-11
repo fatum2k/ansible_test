@@ -1,8 +1,0 @@
----
-- name: prepare_host
-  hosts: all
-  gather_facts: yes
-  become: yes
-  roles:
-    - ping
-    - role-encrypt-disk
