@@ -1,0 +1,13 @@
+### 11. **`lint/ansible_lint.yml`**
+
+This file configures `ansible-lint` to enforce best practices.
+
+```yaml
+---
+skip_list:
+  - '206'  # Ignore specific rules if necessary
+
+warn_list:
+  - '204'  # Warn about any practices you want to be aware of
+
+# Add any custom rules or configurations here

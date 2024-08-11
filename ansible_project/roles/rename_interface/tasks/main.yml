@@ -1,0 +1,9 @@
+---
+- name: Ensure the interface renaming task is included
+  ansible.builtin.include_tasks: rename_interface.yml
+
+- name: Ensure the interface information is shown
+  ansible.builtin.include_tasks: show_interface_info.yml
+
+- name: Ensure the CPU information is shown
+  ansible.builtin.include_tasks: show_cpu_info.yml

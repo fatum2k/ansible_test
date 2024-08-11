@@ -1,0 +1,48 @@
+---
+- name: Check if the desired interface name already exists
+  community.general.nmcli:
+    type: connection
+    state: present
+  register: all_connections
+
+- name: Fail if desired interface name 'net1' already exists
+  ansible.builtin.fail:
+    msg: "The desired interface name 'net1' already exists."
+  when: "'net1' in all_connections.connections | map(attribute='name') | list"
+
+- name: Get current active connection
+  community.general.nmcli:
+    type: connection
+    state: present
+    active: true
+  register: active_connection
+
+- name: Set fact for current interface name
+  ansible.builtin.set_fact:
+    current_interface: "{{ active_connection.connections[0].device }}"
+
+- name: Rename the network interface from net0 to net1
+  community.general.nmcli:
+    type: ethernet  # or the correct type like wifi, vlan, etc.
+    conn_name: "net0"
+    ifname: "net1"
+    state: present
+  when: current_interface == "net0"
+
+- name: Apply the changes to the new interface name net1
+  community.general.nmcli:
+    type: ethernet
+    conn_name: "net1"
+    state: present
+
+- name: Verify that the new interface name is active
+  community.general.nmcli:
+    type: ethernet
+    conn_name: "net1"
+    state: present
+  register: verify_connection
+
+- name: Ensure the interface net1 is active
+  ansible.builtin.fail:
+    msg: "The interface net1 is not active."
+  when: verify_connection.connections[0].active != 'yes'
