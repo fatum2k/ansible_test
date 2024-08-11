@@ -1,0 +1,6 @@
+---
+- import_tasks: check_disk.yml
+- import_tasks: encrypt_disk.yml
+- import_tasks: open_disk.yml
+- import_tasks: create_filesystem.yml
+- import_tasks: mount_disk.yml

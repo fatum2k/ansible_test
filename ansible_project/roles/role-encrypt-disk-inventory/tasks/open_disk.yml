@@ -1,0 +1,8 @@
+---
+- name: Open the LUKS encrypted partition
+  community.crypto.luks_device:
+    device: "{{ partition_name }}"
+    state: opened
+    passphrase: "{{ luks_passphrase }}"
+    name: luks-
+  become: yes

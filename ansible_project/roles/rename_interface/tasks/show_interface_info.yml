@@ -1,0 +1,9 @@
+---
+- name: Show detailed interface information
+  community.general.nmcli:
+    type: device
+  register: interface_info
+
+- name: Display interface information
+  debug:
+    var: interface_info.devices

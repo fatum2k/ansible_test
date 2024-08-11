@@ -1,0 +1,19 @@
+---
+- name: Gather system facts
+  ansible.builtin.setup:
+
+- name: Show CPU model information
+  debug:
+    msg: "CPU Model: {{ ansible_processor }}"
+
+- name: Show CPU architecture
+  debug:
+    msg: "Architecture: {{ ansible_architecture }}"
+
+- name: Show CPU cores and threads information
+  debug:
+    msg: "Cores: {{ ansible_processor_cores }}, Threads per Core: {{ ansible_processor_threads_per_core }}"
+
+- name: Show total CPU count
+  debug:
+    msg: "Total CPUs: {{ ansible_processor_count }}"

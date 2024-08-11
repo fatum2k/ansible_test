@@ -1,0 +1,25 @@
+---
+- name: Check if partition exists
+  ansible.builtin.stat:
+    path: "{{ partition_name }}"
+  register: partition_stat
+
+- name: Fail if partition does not exist
+  ansible.builtin.fail:
+    msg: "Partition {{ partition_name }} does not exist."
+  when: not partition_stat.stat.exists
+
+- name: Check if partition is already encrypted
+  community.crypto.luks_device:
+    device: "{{ partition_name }}"
+    state: opened
+    passphrase: "{{ luks_passphrase }}"
+  register: luks_check
+  failed_when: luks_check.failed
+  changed_when: false
+  become: yes
+
+- name: Fail if partition is already encrypted
+  ansible.builtin.fail:
+    msg: "Partition {{ partition_name }} is already LUKS encrypted."
+  when: luks_check.changed
