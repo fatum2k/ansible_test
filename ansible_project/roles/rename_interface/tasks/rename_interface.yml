@@ -1,0 +1,85 @@
+---
+- name: Install NetworkManager if not present
+  ansible.builtin.package:
+    name: network-manager
+    state: present
+  become: true
+
+- name: List all network interfaces
+  ansible.builtin.shell: |
+    ip -o link show | awk -F': ' '{print $2}'
+  register: interface_list
+
+- name: Display all network interfaces
+  ansible.builtin.debug:
+    var: interface_list.stdout_lines
+
+- name: Check if the desired interface name 'net1' exists
+  ansible.builtin.fail:
+    msg: "The desired interface name 'net1' already exists."
+  when: "'net1' in interface_list.stdout_lines"
+
+- name: Check if the old interface name 'enX0' exists
+  ansible.builtin.fail:
+    msg: "The old interface name 'enX0' does not exist, cannot proceed with renaming."
+  when: "'enX0' not in interface_list.stdout_lines"
+
+- name: Backup the original netplan configuration file
+  ansible.builtin.copy:
+    src: /etc/netplan/50-cloud-init.yaml
+    dest: /etc/netplan/50-cloud-init.yaml.bak
+    backup: yes
+  become: true
+  become_user: root
+  become_method: sudo
+
+- name: Remove set-name line from netplan configuration
+  ansible.builtin.replace:
+    path: /etc/netplan/50-cloud-init.yaml
+    regexp: '^\s*set-name: "enX0"'
+    replace: ''
+  become: true
+
+- name: Apply netplan configuration
+  ansible.builtin.command: netplan apply
+  become: true
+  notify:
+    - Restart NetworkManager
+
+- name: Rename the network interface from enX0 to net1
+  community.general.nmcli:
+    type: ethernet
+    conn_name: enX0
+    ifname: net1
+    state: present
+
+- name: Reload NetworkManager to apply changes
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: reloaded
+  become: true
+
+- name: Verify the interface net1 exists
+  community.general.nmcli:
+    conn_name: net1
+    type: ethernet
+    state: present
+  register: net1_status
+
+- name: Verify the old interface name enX0 does not exist
+  community.general.nmcli:
+    conn_name: enX0
+    type: ethernet
+    state: absent
+  register: enx0_status
+  ignore_errors: true
+
+- name: Display net1 verification result
+  ansible.builtin.debug:
+    msg: "Interface net1 was successfully found and is active."
+  when: net1_status.changed == "false"
+
+- name: Display enX0 verification result
+  ansible.builtin.debug:
+    msg: "Interface enX0 does not exist, renaming was successful."
+  when: enx0_status.failed

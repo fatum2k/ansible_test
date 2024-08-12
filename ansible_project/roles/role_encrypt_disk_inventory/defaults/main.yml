@@ -1,0 +1,2 @@
+---
+role_encrypt_disk_inventory_luks_passphrase: "YourSecurePassphrase"

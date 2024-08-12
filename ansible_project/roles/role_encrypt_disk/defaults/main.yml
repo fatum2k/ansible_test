@@ -1,0 +1,3 @@
+---
+role_encrypt_disk_partition_name: "/dev/xvdb"
+role_encrypt_disk_luks_passphrase: "YourSecurePassphrase"

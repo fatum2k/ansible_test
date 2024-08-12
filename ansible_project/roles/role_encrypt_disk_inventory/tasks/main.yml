@@ -1,0 +1,11 @@
+---
+- name: Check disk
+  ansible.legacy.import_tasks: check_disk.yml
+- name: Encrypt disk
+  ansible.legacy.import_tasks: encrypt_disk.yml
+- name: Open disk
+  ansible.legacy.import_tasks: open_disk.yml
+- name: Create filesystem
+  ansible.legacy.import_tasks: create_filesystem.yml
+- name: Mount disk
+  ansible.legacy.import_tasks: mount_disk.yml

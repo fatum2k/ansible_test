@@ -1,0 +1,26 @@
+---
+- name: Ensure mount point directory exists
+  ansible.builtin.file:
+    path: /mnt/encrypted
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+
+- name: Mount the encrypted partition
+  ansible.posix.mount:
+    path: /mnt/encrypted
+    src: /dev/mapper/luks-
+    fstype: ext4
+    state: mounted
+  become: true
+
+- name: Ensure partition is mounted on reboot
+  ansible.posix.mount:
+    path: /mnt/encrypted
+    src: /dev/mapper/luks-
+    fstype: ext4
+    opts: defaults
+    state: present
+  become: true

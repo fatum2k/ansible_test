@@ -1,0 +1,30 @@
+---
+- name: Update apt package index
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+
+- name: Install tuned if not present
+  ansible.builtin.apt:
+    name: tuned
+    state: present
+  become: true
+
+- name: Set tuned profile to throughput-performance
+  ansible.builtin.command: tuned-adm profile throughput-performance
+  become: true
+
+- name: Verify tuned profile is active
+  ansible.builtin.shell: tuned-adm active
+  register: tuned_active
+  changed_when: false
+
+- name: Confirm throughput-performance profile is active
+  ansible.builtin.debug:
+    msg: "Performance mode enabled: {{ tuned_active.stdout }}"
+  when: "'throughput-performance' in tuned_active.stdout"
+
+- name: Fail if performance profile is not active
+  ansible.builtin.fail:
+    msg: "Failed to switch to performance mode."
+  when: "'throughput-performance' not in tuned_active.stdout"
